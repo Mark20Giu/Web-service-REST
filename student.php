@@ -6,10 +6,10 @@ $controllo = false;
 switch($method) {
   case 'GET':
     $id = $_GET['id'];
-    if (isset($id)){
+    if (isset($id)){//da lo studente con l'id indicato 
       $student = $student->find($id);
       $js_encode = json_encode(array('state'=>TRUE, 'student'=>$student),true);
-    }else{
+    }else{//da tutti gli studenti
       $students = $student->all();
       $js_encode = json_encode(array('state'=>TRUE, 'students'=>$students),true);
     }
@@ -19,53 +19,40 @@ switch($method) {
 
   case 'POST':
     
-    // curl --header "Content-Type: application/json" --request POST --data {"""_id""":3,"""_name""":"""nameBello""","""_surname""":"""surnameBello""","""_sidiCode""":"""452121""","""_taxCode""":"""RJDIJEIJWEJ9FDIEF"""} http://localhost:8080/student.php
+    // curl --header "Content-Type: application/json" --request POST --data {"""_id""":3,"""_name""":"""nameBello""","""_surname""":"""surnameBello""","""_sidiCode""":"""452121""","""_taxCode""":"""RJDIJEIJWEJ9FDIEF"""} http://localhost:8000/student.php
     
     $body = file_get_contents("php://input");
+    //echo "BODYY: ".$body;
     
     $js_decoded = json_decode($body, true);
-    if(isset($js_decoded["_id"])){
-      $controllo = $student->find($js_decoded["_id"]);
+    /*
+    echo "TEST1: ".$js_decoded["_id"];
+    echo "TEST2: ".$js_decoded["_name"];
+    echo "TEST3: ".$js_decoded["_surname"];
+    echo "TEST4: ".$js_decoded["_sidiCode"];
+    echo "TEST5: ".$js_decoded["_taxCode"];
+    */
     
-      if($controllo==false){
+    
+    
+      //echo "dati inseriti";
+      
+    
+      
         
-        $controllo = $student->addStudent($js_decoded["_id"],$js_decoded["_name"],$js_decoded["_surname"],$js_decoded["_sidiCode"],$js_decoded["_taxCode"]);
+    $student->addStudent($js_decoded["_name"],$js_decoded["_surname"],$js_decoded["_sidiCode"],$js_decoded["_taxCode"]);
         
-        if($controllo==true){
-          echo "studente inserito!";
-        }
-        else{
-          echo "errore nel inserimento";
-          
-        }
+    
 
 
 
-      }else{
-        echo "Id gia utilizzato";
-      }
-    }else{
-      // curl --header "Content-Type: application/json" --request POST --data {"""_name""":"""nameBello""","""_surname""":"""surnameBello""","""_sidiCode""":"""452121""","""_taxCode""":"""RJDIJEIJWEJ9FDIEF"""} http://localhost:8080/student.php
-      $id =  $student->getId();
-      $controllo = $student->find($js_decoded["_id"]);
-      if($controllo==false){
-        
-        $controllo = $student->addStudent($id,$js_decoded["_name"],$js_decoded["_surname"],$js_decoded["_sidiCode"],$js_decoded["_taxCode"]);
-        
-        if($controllo==true){
-          echo "studente inserito!";
-        }
-        else{
-          echo "errore nel inserimento";
-          
-        }
+      
+    
 
 
 
-      }else{
-        echo "Id gia utilizzato";
-      }
-    }
+     
+    
     
     break;
 
@@ -75,6 +62,7 @@ switch($method) {
     if(isset($js_decoded["_id"])){
       $controllo = $student->find($js_decoded["_id"]);
       if($controllo == true){
+        //RIMOZIONE COLLEGAMENTI 
         $student->removeColl($js_decoded["_id"]);
         if($controllo==true){
           echo "collegamenti rimossi!";
@@ -105,6 +93,9 @@ switch($method) {
     break;
 
   case 'PUT':
+
+
+    
     $body = file_get_contents("php://input");
     $js_decoded = json_decode($body, true);
     if(isset($js_decoded["_name"])){
